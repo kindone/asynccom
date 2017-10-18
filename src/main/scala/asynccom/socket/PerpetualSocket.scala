@@ -1,32 +1,21 @@
-package com.kindone.infinitewall.persistence.wsstorage.socket
+package com.kindone.asynccom.socket
 
 import java.util.UUID
+import com.kindone.asynccom.events._
+import com.kindone.timer.Timer
 
-import com.kindone.infinitewall.event.EventListener
-import com.kindone.infinitewall.persistence.wsstorage.events._
-import com.kindone.infinitewall.util.Timer
-import org.scalajs.dom.raw.Event
-import upickle.default._
-import org.scalajs.dom
-import scala.scalajs.js
-import scala.scalajs.js.JavaScriptException
-import scala.scalajs.js.timers.SetTimeoutHandle
-
-/**
- * Created by kindone on 2016. 4. 17..
- */
 object PerpetualWebSocket {
   val CONNECTION_TIMEOUT_MS = 25000
   val BACKOFF_BASE_MS = 500
 }
 
-class PerpetualWebSocket(baseUrl: String, wsFactory: WebSocketFactory, timer: Timer)
-    extends PerpetualSocket with StateContext {
+class PerpetualSocket(baseUrl: String, wsFactory: SocketFactory, timer: Timer)
+    extends MessageReceiveEventDispatcher with StateContext {
 
   private var socket: Option[Socket] = None
   private var openTimeoutUUID: Option[UUID] = None
   private var retryTimeoutUUID: Option[UUID] = None
-  private var socketState: PersistentWebSocketState = new Initial(this)
+  private var socketState: PersistentSocketState = new Initial(this)
 
   socketState.tryConnect()
 
@@ -47,7 +36,7 @@ class PerpetualWebSocket(baseUrl: String, wsFactory: WebSocketFactory, timer: Ti
       val ws = wsFactory.create(baseUrl)
       ws.addOnReceiveListener(onReceive _)
       ws.addOnSocketOpenListener({ e: SocketOpenCloseEvent =>
-        dom.console.info("onOpen called")
+        //dom.console.info("onOpen called")
         socketState.succeed()
       })
 
@@ -55,13 +44,15 @@ class PerpetualWebSocket(baseUrl: String, wsFactory: WebSocketFactory, timer: Ti
         socketState.closed()
       })
 
-      dom.console.info("WebSocket opening: " + ws.toString + ":" + ws.ws.toString + ":" + ws.numSocketOpenEventListeners)
+      //dom.console.info("WebSocket opening: " + ws.toString + ":" + ws.ws.toString + ":" + ws.numSocketOpenEventListeners)
       socket = Some(ws)
       scheduleOpenTimeout()
 
     } catch {
-      case err: JavaScriptException =>
-        dom.console.info("Exception occurred in creating WebSocket object: " + err.toString())
+      // TODO:
+      case err: RuntimeException =>
+        //case err: JavaScriptException =>
+        //dom.console.info("Exception occurred in creating WebSocket object: " + err.toString())
         socketState.fail()
     }
   }
@@ -73,7 +64,7 @@ class PerpetualWebSocket(baseUrl: String, wsFactory: WebSocketFactory, timer: Ti
   }
 
   def cancelOpenTimeout(): Unit = {
-    dom.console.info("WebSocket canceled open timeout")
+    //dom.console.info("WebSocket canceled open timeout")
     openTimeoutUUID.foreach(uuid => timer.clearTimeout(uuid))
     openTimeoutUUID = None
   }
@@ -86,7 +77,7 @@ class PerpetualWebSocket(baseUrl: String, wsFactory: WebSocketFactory, timer: Ti
     })
   }
 
-  override def changeState(newState: PersistentWebSocketState): Unit = {
+  override def changeState(newState: PersistentSocketState): Unit = {
     socketState = newState
   }
 
@@ -94,11 +85,12 @@ class PerpetualWebSocket(baseUrl: String, wsFactory: WebSocketFactory, timer: Ti
     retryTimeoutUUID.foreach(uuid => timer.clearTimeout(uuid))
     retryTimeoutUUID = None
   }
-
+  /*
   def open() = {
     socket.foreach { ws =>
-      dom.console.info("WebSocket forced open event: " + ws.toString + ":" + ws.asInstanceOf[WebSocket].ws.toString + ":" + ws.numSocketOpenEventListeners)
+      //dom.console.info("WebSocket forced open event: " + ws.toString + ":" + ws.asInstanceOf[WebSocket].ws.toString + ":" + ws.numSocketOpenEventListeners)
       ws.asInstanceOf[WebSocket].ws.asInstanceOf[js.Dynamic].onopen(js.Dynamic.literal().asInstanceOf[Event])
     }
   }
+*/
 }
