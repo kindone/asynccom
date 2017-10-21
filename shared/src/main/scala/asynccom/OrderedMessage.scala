@@ -4,12 +4,6 @@ package com.kindone.asynccom
  * Created by kindone on 2017. 5. 7..
  */
 
-trait ClientToServerMessage {
-  def reqId: Long
-}
-
-case class Response(reqId: Long, success: Boolean) extends ClientToServerMessage
-
 trait OrderedMessageBuffer {
   def insert(msg: ClientToServerMessage): Unit
 

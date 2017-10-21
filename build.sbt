@@ -1,8 +1,14 @@
-name := "asynccom"
+lazy val projectName = "asynccom"
 
-organization := "com.kindone"
+lazy val projectOrganization = "com.kindone"
 
-version := "0.1-SNAPSHOT"
+lazy val projectVersion = "0.1-SNAPSHOT"
+
+name := projectName
+
+organization := projectOrganization
+
+version := projectVersion
 
 scalaVersion := "2.12.3"
 
@@ -16,22 +22,26 @@ lazy val root = project.in(file(".")).
 
 lazy val crosslib = crossProject.in(file(".")).
   settings(
-    name := "asynccom",
-    organization := "com.kindone",
-    version := "0.1-SNAPSHOT"
+    name := projectName,
+    organization := projectOrganization,
+    version := projectVersion
   ).
   jvmSettings(
     // Add JVM-specific settings here
     libraryDependencies ++= Seq(
       "com.kindone" %% "event" % "0.1-SNAPSHOT",
-      "com.kindone" %% "timer" % "0.1-SNAPSHOT"
+      "com.kindone" %% "timer" % "0.1-SNAPSHOT",
+      "org.scalatest" %% "scalatest" % "3.0.4" % "test",
+      "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0" % "test"
     )
   ).
   jsSettings(
     // Add JS-specific settings here
     libraryDependencies ++= Seq(
       "com.kindone" %%% "event" % "0.1-SNAPSHOT",
-      "com.kindone" %%% "timer" % "0.1-SNAPSHOT"
+      "com.kindone" %%% "timer" % "0.1-SNAPSHOT",
+      "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
+      "org.scalamock" %%% "scalamock-scalatest-support" % "3.6.0" % "test"
     )
   )
 
