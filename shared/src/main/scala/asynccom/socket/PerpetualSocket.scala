@@ -4,7 +4,7 @@ import java.util.UUID
 import com.kindone.asynccom.events._
 import com.kindone.timer.Timer
 
-object PerpetualWebSocket {
+object PerpetualSocket {
   val CONNECTION_TIMEOUT_MS = 25000
   val BACKOFF_BASE_MS = 500
 }
@@ -58,7 +58,7 @@ class PerpetualSocket(baseUrl: String, wsFactory: SocketFactory, timer: Timer)
   }
 
   def scheduleOpenTimeout(): Unit = {
-    openTimeoutUUID = Some(timer.setTimeout(PerpetualWebSocket.CONNECTION_TIMEOUT_MS) {
+    openTimeoutUUID = Some(timer.setTimeout(PerpetualSocket.CONNECTION_TIMEOUT_MS) {
       socketState.timeout()
     })
   }
@@ -71,7 +71,7 @@ class PerpetualSocket(baseUrl: String, wsFactory: SocketFactory, timer: Timer)
 
   override def scheduleReconnect(backOff: Int): Unit = {
     val saturatedBackOff = if (backOff < 10) backOff else 10
-    val timeMs = (Math.pow(2.0, saturatedBackOff - 1) * PerpetualWebSocket.BACKOFF_BASE_MS).toLong
+    val timeMs = (Math.pow(2.0, saturatedBackOff - 1) * PerpetualSocket.BACKOFF_BASE_MS).toLong
     retryTimeoutUUID = Some(timer.setTimeout(timeMs) {
       connect()
     })
@@ -85,6 +85,8 @@ class PerpetualSocket(baseUrl: String, wsFactory: SocketFactory, timer: Timer)
     retryTimeoutUUID.foreach(uuid => timer.clearTimeout(uuid))
     retryTimeoutUUID = None
   }
+
+  def getSocket() = socket
   /*
   def open() = {
     socket.foreach { ws =>

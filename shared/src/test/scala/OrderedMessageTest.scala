@@ -19,6 +19,7 @@ class OrderedMessageTest extends FlatSpec with MockFactory with Matchers {
       msgproc.request(Request(4, "c"))
       msgproc.request(Request(5, "sdf"))
 
+      // check all requests are properly saved
       msgproc.pendingRequests should be(
         List(
           (0, Request(0, "hello")),
@@ -28,6 +29,7 @@ class OrderedMessageTest extends FlatSpec with MockFactory with Matchers {
           (4, Request(4, "c")),
           (5, Request(5, "sdf"))))
 
+      // check return value of respond
       msgproc.respond(Response(4, 0, 0, "hello")) should be(List())
 
       msgproc.respond(Response(1, 1, 0, "world")) should be(List())

@@ -40,9 +40,11 @@ lazy val crosslib = crossProject.in(file(".")).
     libraryDependencies ++= Seq(
       "com.kindone" %%% "event" % "0.1-SNAPSHOT",
       "com.kindone" %%% "timer" % "0.1-SNAPSHOT",
+      "org.scala-js" %%% "scalajs-dom" % "0.9.3",
       "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
       "org.scalamock" %%% "scalamock-scalatest-support" % "3.6.0" % "test"
-    )
+    ),
+    scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
 
 lazy val crossJVM = crosslib.jvm
