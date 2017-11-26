@@ -6,16 +6,19 @@ import org.scalatest.FlatSpec
 import org.scalatest._
 
 import scala.scalajs.js
-import scala.scalajs.js.JavaScriptException
-
+import scala.scalajs.js.{JavaScriptException, |}
 import scala.language.dynamics
 
 
 trait MockWebSocketTrait extends js.Object {
   def send(str: String): Unit
   def close(code: Int, reason: String): Unit
+  var onopen: js.Function1[Event, _]
+  var onerror: js.Function1[ErrorEvent, _]
+  var onmessage: js.Function1[MessageEvent, _]
+  var onclose: js.Function1[CloseEvent, _]
+  def toString():String
 }
-
 
 class DisabledWebSocketTest extends FlatSpec with org.scalamock.scalatest.MockFactory with Matchers with GivenWhenThen {
 
@@ -28,7 +31,7 @@ class DisabledWebSocketTest extends FlatSpec with org.scalamock.scalatest.MockFa
       (bws.close _).expects(100, "normal")
     }
 
-    val ws = new WebSocket(bws)
+    val ws = new WebSocket(Some(bws))
 
     var openCalled = 0
     var closeCalled = 0
@@ -86,7 +89,35 @@ class DisabledWebSocketTest extends FlatSpec with org.scalamock.scalatest.MockFa
     messageCalled should be(1)
   }
 
+  ignore should "work as expected" in {
+//    val real = mock[org.scalajs.dom.raw.WebSocket]
 
+    val real = new org.scalajs.dom.raw.WebSocket()
+    val fake = new MockWebSocketTrait {override def close(code: Int, reason: String): Unit = ???
+
+      override def send(str: String): Unit = ???
+
+      override var onerror: js.Function1[ErrorEvent, _] = _
+      override var onopen: js.Function1[Event, _] = _
+      override var onmessage: js.Function1[MessageEvent, _] = _
+      override var onclose: js.Function1[CloseEvent, _] = _
+    }
+    def either(ws:org.scalajs.dom.raw.WebSocket | WebSocketLike) = {
+//      ws.merge.onopen(js.Dynamic.literal().asInstanceOf[Event])
+    }
+
+    def structural(ws: {
+      var onopen:js.Function1[Event, _]
+    }) = {
+      ws.onopen(js.Dynamic.literal().asInstanceOf[Event])
+    }
+
+    either(real)
+    either(fake)
+
+    structural(real)
+    structural(fake)
+  }
 
 
 }

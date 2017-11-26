@@ -10,17 +10,11 @@ object Socket {
 }
 
 trait Socket extends SocketEventDispatcher {
+  def open(url:String):Unit
   def close(): Unit
   def send(str: String): Unit
 }
 
-trait PerpetualSocketTrait extends MessageReceiveEventDispatcher {
-  def send(str: String): Unit
-  def isAlive: Boolean
-  def isOpen: Boolean
-}
 
-trait MailboxSocket extends MessageReceiveEventDispatcher {
-  def setMailbox(messages: List[String]): Unit
-  def clearMailbox(): Unit
-}
+
+

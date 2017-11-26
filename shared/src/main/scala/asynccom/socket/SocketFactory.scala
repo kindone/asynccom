@@ -5,6 +5,6 @@ package com.kindone.asynccom.socket
  */
 
 trait SocketFactory {
-  def create(url: String): Socket
+  def create(): Socket
 }
 

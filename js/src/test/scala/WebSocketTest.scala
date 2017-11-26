@@ -10,33 +10,80 @@ import scala.scalajs.js.JavaScriptException
 
 import scala.language.dynamics
 
-class GoodWebSocket extends js.Object {
+class GoodWebSocket extends WebSocketTrait {
   def send(str: String): Unit = {}
   def close(code: Int, reason: String): Unit = {}
-}
+  override def toString():String = ""
 
-class BadWebSocket extends js.Object {
+  var onopen:js.Function1[Event, _] = null
+  var onerror: js.Function1[ErrorEvent, _] = null
+  var onmessage: js.Function1[MessageEvent, _] = null
+  var onclose: js.Function1[CloseEvent, _] = null
 }
-
 
 
 class WebSocketTest extends FlatSpec with org.scalamock.scalatest.MockFactory with Matchers with GivenWhenThen {
+  "Socket" should "add and emit event properly" in {
+    val socket = new Socket {
+      override def close(): Unit = ???
+
+      override def send(str: String): Unit = ???
+
+      override def open(url: String): Unit = ???
+    }
+
+    var openCalled = false
+    var closeCalled = false
+    var errorCalled = false
+    var messageCalled = false
+    var errorMessage = ""
+    var message = ""
+
+    socket.addOnSocketOpenListener((e:SocketOpenCloseEvent) => {
+      openCalled = true
+    })
+
+    socket.addOnSocketCloseListener((e:SocketOpenCloseEvent) => {
+      closeCalled = true
+    })
+
+    socket.addOnErrorListener((e:SocketErrorEvent) => {
+      errorMessage = e.message
+      errorCalled = true
+    })
+
+    socket.addOnReceiveListener((e:MessageReceiveEvent) => {
+      message = e.str
+      messageCalled = true
+    })
+
+    socket.dispatchSocketOpenEvent()
+    openCalled should be(true)
+    socket.dispatchSocketCloseEvent()
+    closeCalled should be(true)
+    socket.dispatchErrorEvent("error")
+    errorCalled should be(true)
+    socket.dispatchReceiveEvent("message")
+    messageCalled should be(true)
+
+    socket.numSocketOpenEventListeners should be(1)
+    socket.numSocketCloseEventListeners should be(1)
+
+    errorMessage should be("error")
+    message should be("message")
+  }
+
   "WebSocket" should "receive object with send and close methods" in {
-    val good = new WebSocket(new GoodWebSocket)
+    val good = new WebSocket(Some(new GoodWebSocket))
     good.send("")
     good.close()
-    val bad = new WebSocket(new BadWebSocket)
-    assertThrows[JavaScriptException] {
-      bad.send("")
-    }
-    assertThrows[JavaScriptException] {
-      bad.close()
-    }
   }
+
+
 
   "WebSocket" should "emit events on on* call" in {
     val base = new GoodWebSocket
-    val ws = new WebSocket(base)
+    val ws = new WebSocket(Some(base))
 
     var openCalled = false
     var closeCalled = false
@@ -63,13 +110,13 @@ class WebSocketTest extends FlatSpec with org.scalamock.scalatest.MockFactory wi
       messageCalled = true
     })
 
-    base.asInstanceOf[js.Dynamic].onopen(js.Dynamic.literal().asInstanceOf[Event])
+    base.onopen(js.Dynamic.literal().asInstanceOf[Event])
     openCalled should be(true)
-    base.asInstanceOf[js.Dynamic].onclose(js.Dynamic.literal().asInstanceOf[Event])
+    base.onclose(js.Dynamic.literal().asInstanceOf[CloseEvent])
     closeCalled should be(true)
-    base.asInstanceOf[js.Dynamic].onerror(js.Dynamic.literal(message = "error").asInstanceOf[ErrorEvent])
+    base.onerror(js.Dynamic.literal(message = "error").asInstanceOf[ErrorEvent])
     errorCalled should be(true)
-    base.asInstanceOf[js.Dynamic].onmessage(js.Dynamic.literal(data = "message").asInstanceOf[MessageEvent])
+    base.onmessage(js.Dynamic.literal(data = "message").asInstanceOf[MessageEvent])
     messageCalled should be(true)
 
     errorMessage should be("error")
