@@ -6,7 +6,7 @@ import com.kindone.event.{ EventListener, EventDispatcher }
  * Created by kindone on 2016. 5. 31..
  */
 
-class SocketOpenCloseEvent extends WebSocketEvent
+class SocketOpenCloseEvent extends SocketEvent
 
 trait SocketOpenCloseEventDispatcher {
   private val dispatcher: EventDispatcher[SocketOpenCloseEvent] = new EventDispatcher

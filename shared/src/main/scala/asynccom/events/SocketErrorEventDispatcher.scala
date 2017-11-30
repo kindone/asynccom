@@ -6,7 +6,7 @@ import com.kindone.event.{ EventListener, EventDispatcher }
  * Created by kindone on 2016. 5. 31..
  */
 
-class SocketErrorEvent(val message: String) extends WebSocketEvent
+class SocketErrorEvent(val message: String) extends SocketEvent
 
 trait SocketErrorEventDispatcher {
   private val dispatcher: EventDispatcher[SocketErrorEvent] = new EventDispatcher

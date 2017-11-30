@@ -6,7 +6,7 @@ import com.kindone.event.{ EventListener, EventDispatcher }
  * Created by kindone on 2016. 5. 31..
  */
 
-case class MessageReceiveEvent(str: String) extends WebSocketEvent
+case class MessageReceiveEvent(str: String) extends SocketEvent
 
 trait MessageReceiveEventDispatcher {
   private val dispatcher: EventDispatcher[MessageReceiveEvent] = new EventDispatcher
