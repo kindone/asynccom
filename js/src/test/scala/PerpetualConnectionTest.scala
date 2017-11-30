@@ -248,7 +248,6 @@ class PerpetualConnectionTest extends FlatSpec with org.scalamock.scalatest.Mock
     timeline.canceledEntries.size should be(1)
     conn.stateName should be ("Connected")
 
-    // TODO: test close and reconnect
     When("connection is closed")
     conn.simulateClose()
     timeline.firedEntries.size should be(3)
@@ -264,7 +263,6 @@ class PerpetualConnectionTest extends FlatSpec with org.scalamock.scalatest.Mock
     timeline.scheduledEntries.size should be(1)
     timeline.canceledEntries.size should be(1)
     conn.stateName should be ("WaitingForOpen")
-
   }
 
 }
