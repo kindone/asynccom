@@ -23,7 +23,7 @@ trait MessageReceiveEventDispatcher {
     dispatcher.dispatchEvent(RECEIVE, new MessageReceiveEvent(str))
 
   def removeAllOnReceiveListener(): Unit = {
-    dispatcher.clear()
+    dispatcher.clear(RECEIVE)
   }
 
 }

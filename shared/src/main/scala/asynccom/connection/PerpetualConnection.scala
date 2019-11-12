@@ -25,13 +25,18 @@ class PerpetualConnection(val config:PerpetualConnectionConfig)
 
   private[connection] def getState() = this.connState
 
+  private var initiated = false
+
   def isOpen: Boolean = connState.isInstanceOf[Connected]
 
   def stateName:String = connState.toString
 
 
   def initiate():Unit = {
-    getState().tryConnect()
+    if(!initiated) {
+      getState().tryConnect()
+      initiated = true
+    }
   }
 
   def send(str: String): Unit = {

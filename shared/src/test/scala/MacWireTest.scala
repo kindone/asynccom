@@ -51,10 +51,10 @@ class MacWireTest extends FlatSpec with MockFactory with Matchers {
         }
       }
       lazy val connectionConfig = wire[PerpetualConnectionConfig]
-      lazy val perpetualSocket = wire[PerpetualConnection]
+      lazy val connection = wire[PerpetualConnection]
     }
 
     val module = new GenericModule("")
-    module.perpetualSocket
+    module.connection
   }
 }
